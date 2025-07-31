@@ -25,30 +25,48 @@ export class AswS3Service {
     });
   }
 
+ 
+
   async uploadFile(fileId, file) {
     if (!fileId || !file) {
       throw new BadRequestException('File ID and file content are required');
     }
-
+  
+    
+    const watermarkSvg = `
+      <svg width="300" height="100">
+        <text x="10" y="50" font-size="24" fill="white" opacity="0.6">© Elene</text>
+      </svg>
+    `;
+  
+  
     const processedBuffer = await sharp(file.buffer)
-      .resize(800) 
-      .toFormat('webp')
-      .webp({ quality: 80 }) 
+      .resize(800)
+      .modulate({ brightness: 1.1, saturation: 1.2 }) // Filters
+      .composite([
+        {
+          input: Buffer.from(watermarkSvg),
+          gravity: 'southeast', 
+        },
+      ])
+      .toFormat('webp') 
+      .webp({ quality: 75 }) 
       .toBuffer();
-
+  
+    
     const config = {
       Key: fileId.endsWith('.webp') ? fileId : `${fileId}.webp`,
       Body: processedBuffer,
       Bucket: this.bucketName,
       ContentType: 'image/webp',
     };
-
+  
     const uploadCommand = new PutObjectCommand(config);
-
     await this.s3.send(uploadCommand);
+  
     return config.Key;
   }
-
+  
   async getFileById(fileId) {
     if (!fileId) throw new BadRequestException('File ID is required');
 

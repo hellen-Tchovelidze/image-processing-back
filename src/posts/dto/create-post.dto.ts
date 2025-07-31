@@ -1,13 +1,17 @@
+import { O } from "@faker-js/faker/dist/airline-CLphikKp";
+import { Optional } from "@nestjs/common";
 import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreatePostDto {
     @IsString()
-    @IsNotEmpty()
+    @Optional()
     title: string
 
     @IsString()
-    @IsNotEmpty()
+    @Optional()
     desc: string
 
-    image?: string
+     
+    
+    
 }

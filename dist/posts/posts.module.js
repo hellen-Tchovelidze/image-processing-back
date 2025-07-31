@@ -13,6 +13,7 @@ const posts_controller_1 = require("./posts.controller");
 const mongoose_1 = require("@nestjs/mongoose");
 const post_schema_1 = require("./schema/post.schema");
 const user_schema_1 = require("../users/schema/user.schema");
+const asw_s3_module_1 = require("../asw-s3/asw-s3.module");
 let PostsModule = class PostsModule {
 };
 exports.PostsModule = PostsModule;
@@ -22,7 +23,8 @@ exports.PostsModule = PostsModule = __decorate([
             mongoose_1.MongooseModule.forFeature([
                 { schema: post_schema_1.postSchema, name: 'post' },
                 { schema: user_schema_1.userSchema, name: 'user' },
-            ])
+            ]),
+            asw_s3_module_1.AswS3Module,
         ],
         controllers: [posts_controller_1.PostsController],
         providers: [posts_service_1.PostsService],

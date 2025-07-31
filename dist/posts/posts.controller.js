@@ -26,6 +26,10 @@ let PostsController = class PostsController {
     constructor(postsService) {
         this.postsService = postsService;
     }
+    create(userId, createPostDto, file) {
+        console.log('first');
+        return this.postsService.create(createPostDto, userId, file);
+    }
     deleteFile(fileId) {
         return this.postsService.DeleteFileById(fileId);
     }
@@ -39,25 +43,34 @@ let PostsController = class PostsController {
     uploadFiles(files) {
         return this.postsService.uploadFiles(files);
     }
-    create(userId, createPostDto) {
-        return this.postsService.create(createPostDto, userId);
+    async getMyPosts(userId, queryParamsDto) {
+        return this.postsService.findByUserId(userId, queryParamsDto);
+    }
+    findOne(id) {
+        return this.postsService.findOne(id);
     }
     findAll(queryParamsDto) {
         return this.postsService.findAll(queryParamsDto);
-    }
-    findOne(id) {
-        return this.postsService.findOne(+id);
     }
     update(id, updatePostDto, req) {
         const userId = req.user._id;
         return this.postsService.update(id, updatePostDto, userId);
     }
-    remove(id, req) {
-        const userId = req.user._id;
-        return this.postsService.remove(id, userId);
+    remove(id) {
+        return this.postsService.remove(id);
     }
 };
 exports.PostsController = PostsController;
+__decorate([
+    (0, common_1.Post)(),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    __param(0, (0, user_decorator_1.UserId)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, create_post_dto_1.CreatePostDto, Object]),
+    __metadata("design:returntype", void 0)
+], PostsController.prototype, "create", null);
 __decorate([
     (0, common_1.Delete)('delete-file'),
     __param(0, (0, common_1.Body)('fileId')),
@@ -89,20 +102,13 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PostsController.prototype, "uploadFiles", null);
 __decorate([
-    (0, common_1.Post)(),
+    (0, common_1.Get)('my-posts'),
     __param(0, (0, user_decorator_1.UserId)()),
-    __param(1, (0, common_1.Body)()),
+    __param(1, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, create_post_dto_1.CreatePostDto]),
-    __metadata("design:returntype", void 0)
-], PostsController.prototype, "create", null);
-__decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [query_params_dto_1.QueryParams]),
-    __metadata("design:returntype", void 0)
-], PostsController.prototype, "findAll", null);
+    __metadata("design:paramtypes", [String, query_params_dto_1.QueryParams]),
+    __metadata("design:returntype", Promise)
+], PostsController.prototype, "getMyPosts", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -110,6 +116,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PostsController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [query_params_dto_1.QueryParams]),
+    __metadata("design:returntype", void 0)
+], PostsController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -122,9 +135,8 @@ __decorate([
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], PostsController.prototype, "remove", null);
 exports.PostsController = PostsController = __decorate([

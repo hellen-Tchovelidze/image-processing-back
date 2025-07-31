@@ -6,15 +6,22 @@ export class Post {
 
     @Prop({
         type: String,
-        required: true
+       
     })
-    title: string
+    title?: string
+
+    @Prop({
+        type: String,
+     
+    })
+    desc?: string
+
 
     @Prop({
         type: String,
         required: true
     })
-    desc: string
+    image: string
 
     @Prop({
         type: mongoose.Schema.Types.ObjectId,

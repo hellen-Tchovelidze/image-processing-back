@@ -11,12 +11,12 @@ async function bootstrap() {
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         credentials: true,
         allowedHeaders: ['Content-Type', 'Authorization'],
-        exposedHeaders: ['Content-Disposition']
+        exposedHeaders: ['Content-Disposition'],
     });
     app.use(morgan('tiny'));
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
-        transform: true
+        transform: true,
     }));
     await app.listen(process.env.PORT ?? 3001);
 }

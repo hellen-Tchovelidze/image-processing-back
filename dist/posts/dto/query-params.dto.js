@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.QueryParams = void 0;
+exports.queryParamsDto = exports.QueryParams = void 0;
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 class QueryParams {
@@ -29,4 +29,9 @@ __decorate([
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], QueryParams.prototype, "take", void 0);
+class queryParamsDto {
+    page;
+    limit;
+}
+exports.queryParamsDto = queryParamsDto;
 //# sourceMappingURL=query-params.dto.js.map

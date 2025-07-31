@@ -15,23 +15,29 @@ const mongoose_2 = require("mongoose");
 let Post = class Post {
     title;
     desc;
+    image;
     author;
 };
 exports.Post = Post;
 __decorate([
     (0, mongoose_1.Prop)({
         type: String,
-        required: true
     }),
     __metadata("design:type", String)
 ], Post.prototype, "title", void 0);
 __decorate([
     (0, mongoose_1.Prop)({
         type: String,
-        required: true
     }),
     __metadata("design:type", String)
 ], Post.prototype, "desc", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({
+        type: String,
+        required: true
+    }),
+    __metadata("design:type", String)
+], Post.prototype, "image", void 0);
 __decorate([
     (0, mongoose_1.Prop)({
         type: mongoose_2.default.Schema.Types.ObjectId,

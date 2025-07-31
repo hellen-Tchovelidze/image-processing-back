@@ -12,4 +12,12 @@ export class QueryParams {
     @Transform(({value}) => Math.min(Number(value), 30))
     @IsNumber()
     take: number = 30
+
+    
 }
+
+export class queryParamsDto {
+    page?: number;
+    limit?: number;
+  }
+  

@@ -4,9 +4,6 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { IsAuthGuard } from './guards/isAuth.guard';
 import { UserId } from 'src/users/decorators/user.decorator';
-import { Verify } from 'crypto';
-import { VerifyEmailDto } from './dto/verify-email.dto';
-import { emit } from 'process';
 
 @Controller('auth')
 export class AuthController {

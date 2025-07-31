@@ -18,6 +18,7 @@ const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
 const asw_s3_service_1 = require("../asw-s3/asw-s3.service");
 const uuid_1 = require("uuid");
+const mongoose_3 = require("mongoose");
 let PostsService = class PostsService {
     postModel;
     userModel;
@@ -26,6 +27,25 @@ let PostsService = class PostsService {
         this.postModel = postModel;
         this.userModel = userModel;
         this.aswS3Service = aswS3Service;
+    }
+    async findByUserId(userId, queryParamsDto) {
+        const { page = 1, limit = 12 } = queryParamsDto;
+        const skip = (page - 1) * limit;
+        const [posts, total] = await Promise.all([
+            this.postModel.find({ author: userId }).skip(skip).limit(limit).exec(),
+            this.postModel.countDocuments({ author: userId }),
+        ]);
+        const totalPages = Math.ceil(total / limit);
+        const cloudfrontDomain = process.env.NEXT_PUBLIC_CLOUDFRONT_DOMAIN;
+        const postsWithFullImageUrl = posts.map((post) => ({
+            ...post.toObject(),
+            image: cloudfrontDomain + post.image,
+        }));
+        return {
+            images: postsWithFullImageUrl,
+            total,
+            totalPages,
+        };
     }
     async DeleteFileById(fileId) {
         return this.aswS3Service.deleteFileById(fileId);
@@ -48,12 +68,23 @@ let PostsService = class PostsService {
         }
         return uploadFileIds;
     }
-    async create({ desc, title }, userId) {
+    async create(createPostDto, userId, file) {
         const existUser = await this.userModel.findById(userId);
         if (!existUser)
             throw new common_1.BadRequestException('User not found');
-        const newPost = await this.postModel.create({ title, desc, author: existUser._id });
-        await this.userModel.findByIdAndUpdate(existUser._id, { $push: { posts: newPost._id } });
+        if (!file) {
+            throw new common_1.BadRequestException('File is required');
+        }
+        const imageId = `images/${(0, uuid_1.v4)()}.webp`;
+        await this.aswS3Service.uploadFile(imageId, file);
+        const newPostData = {
+            author: existUser._id,
+            image: imageId,
+        };
+        const newPost = await this.postModel.create(newPostData);
+        await this.userModel.findByIdAndUpdate(existUser._id, {
+            $push: { posts: newPost._id },
+        });
         return { success: 'ok', data: newPost };
     }
     async findAll({ page, take }) {
@@ -61,15 +92,22 @@ let PostsService = class PostsService {
         console.log(page, take);
         const posts = await this.postModel
             .find()
-            .populate({ path: 'author', select: 'email fullName' })
+            .populate({ path: 'author', select: 'email fullName image' })
             .skip((page - 1) * take)
             .limit(take)
             .sort({ _id: -1 });
-        console.log(posts.length, "length");
+        console.log(posts.length, 'length');
         return { total, take, page, posts };
     }
-    findOne(id) {
-        return this.postModel.findById(id);
+    async findOne(id) {
+        if (!mongoose_3.Types.ObjectId.isValid(id)) {
+            throw new common_1.BadRequestException('Invalid post ID');
+        }
+        const post = await this.postModel.findById(id);
+        if (!post) {
+            throw new common_1.NotFoundException('Post not found');
+        }
+        return post;
     }
     async update(id, updatePostDto, userId) {
         const post = await this.postModel.findById(id);
@@ -84,19 +122,16 @@ let PostsService = class PostsService {
         });
         return { success: 'ok', data: updatedPost };
     }
-    async remove(id, userId) {
+    async findById(id) {
+        return this.postModel.findById(id);
+    }
+    async remove(id) {
         const post = await this.postModel.findById(id);
         if (!post) {
             throw new common_1.NotFoundException('Post not found');
         }
-        if (post.author.toString() !== userId) {
-            throw new common_1.ForbiddenException('You are not allowed to delete this post');
-        }
-        await this.userModel.findByIdAndUpdate(userId, {
-            $pull: { posts: post._id },
-        });
         await this.postModel.findByIdAndDelete(id);
-        return { success: 'Post deleted successfully' };
+        return { success: 'ok', message: 'Post deleted successfully' };
     }
 };
 exports.PostsService = PostsService;

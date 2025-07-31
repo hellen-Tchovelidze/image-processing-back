@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 export declare class Post {
-    title: string;
-    desc: string;
+    title?: string;
+    desc?: string;
+    image: string;
     author: mongoose.Schema.Types.ObjectId;
 }
 export declare const postSchema: mongoose.Schema<Post, mongoose.Model<Post, any, any, any, mongoose.Document<unknown, any, Post, any> & Post & {

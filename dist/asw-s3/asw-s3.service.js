@@ -31,10 +31,22 @@ let AswS3Service = class AswS3Service {
         if (!fileId || !file) {
             throw new common_1.BadRequestException('File ID and file content are required');
         }
+        const watermarkSvg = `
+      <svg width="300" height="100">
+        <text x="10" y="50" font-size="24" fill="white" opacity="0.6">© Elene</text>
+      </svg>
+    `;
         const processedBuffer = await sharp(file.buffer)
             .resize(800)
+            .modulate({ brightness: 1.1, saturation: 1.2 })
+            .composite([
+            {
+                input: Buffer.from(watermarkSvg),
+                gravity: 'southeast',
+            },
+        ])
             .toFormat('webp')
-            .webp({ quality: 80 })
+            .webp({ quality: 75 })
             .toBuffer();
         const config = {
             Key: fileId.endsWith('.webp') ? fileId : `${fileId}.webp`,

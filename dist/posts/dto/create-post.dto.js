@@ -10,21 +10,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreatePostDto = void 0;
+const common_1 = require("@nestjs/common");
 const class_validator_1 = require("class-validator");
 class CreatePostDto {
     title;
     desc;
-    image;
 }
 exports.CreatePostDto = CreatePostDto;
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, common_1.Optional)(),
     __metadata("design:type", String)
 ], CreatePostDto.prototype, "title", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, common_1.Optional)(),
     __metadata("design:type", String)
 ], CreatePostDto.prototype, "desc", void 0);
 //# sourceMappingURL=create-post.dto.js.map
