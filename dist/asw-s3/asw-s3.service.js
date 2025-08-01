@@ -21,7 +21,7 @@ let AswS3Service = class AswS3Service {
         this.bucketName = process.env.AWS_BUCKET_NAME;
         this.s3 = new client_s3_1.S3Client({
             credentials: {
-                accessKeyId: process.env.AWS_ACCESS_KEY,
+                accessKeyId: process.env.AWS_ACCESS_KEYY,
                 secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
             },
             region: process.env.AWS_REGION,
